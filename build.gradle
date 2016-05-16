@@ -1,0 +1,46 @@
+group 'CircuitSimulator'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile "org.powermock:powermock-mockito-release-full:1.6.1"
+}
+
+test {
+    useTestNG()
+}
+
+tasks.withType(Test) {
+    scanForTestClasses = false
+    include "**/*Test.class"
+}
+
+jacocoTestReport {
+    doFirst{
+        classDirectories = fileTree(
+                dir: './build/classes/main/circuitSimulator',
+        )
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "build/reports/coverageHtml"
+    }
+}
+
+task(runui, dependsOn: 'classes', type: JavaExec) {
+
+	main = 'circuitSimulator.circuitGUI.Main'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
+defaultTasks 'clean', 'test', 'jacocoTestReport', 'runui'
